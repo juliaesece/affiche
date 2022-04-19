@@ -1,0 +1,333 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdC affiche</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="style.css">
+  <script>
+    $(document).ready(function(){
+      $(".samediChecks, .dimChecks, .WEChecks, #samedi, #dimanche, #toutLeWE").hide();
+      var totalEvents = 0;
+
+      //checkboxes functionality
+
+      $("#if-samedi").change(function() {
+        if(this.checked) {
+          $("#samedi").show();
+          $(".samediChecks").show();
+        } else {
+          $("#samedi").hide();
+          $(".samediChecks").hide();
+        }
+      });
+      $("#if-dimanche").change(function() {
+        if(this.checked) {
+          $("#dimanche").show();
+          $(".dimChecks").show();
+        } else {
+          $("#dimanche").hide();
+          $(".dimChecks").hide();
+        }
+      });
+      $("#if-WE").change(function() {
+        if(this.checked) {
+          $("#toutLeWE").show();
+          $(".WEChecks").show();
+        } else {
+          $("#toutLeWE").hide();
+          $(".WEChecks").hide();
+        }
+      });
+
+      // create new forms
+
+      function formCreator(nb, jour) {
+        nb = String(jour) + String(nb);
+        element = "<div id='form" + nb + "'>\
+          <label for='fnom" + nb + "'>Nom de l'event:</label><br>\
+          <input type='text' id='fnom" + nb + "' name='fnom" + nb + "' checked><br>\
+          <label for='fhoraire" + nb + "'>Horaire:</label><br>\
+          <input type='text' id='fhoraire" + nb + "' name='fhoraire" + nb + "' checked><br>\
+          <label for='fsalle" + nb + "'>Salle:</label><br>\
+          <input type='text' id='fsalle" + nb + "' name='fsalle" + nb + "' checked><br><br>\
+          <button onClick='addToAffiche(" + nb + ", " + jour + ", false)' type='button' id='btn" + nb + "'> Submit </button><br><br>\
+        </div>";
+        return element;
+      }
+
+      function formCreatorDes(nb, jour) {
+        nb = String(jour) + String(nb);
+        element = "<div id='form" + nb + "'>\
+          <label for='fnom" + nb + "'>Nom de l'event:</label><br>\
+          <input type='text' id='fnom" + nb + "' name='fnom" + nb + "' checked><br>\
+          <label for='fhoraire" + nb + "'>Horaire:</label><br>\
+          <input type='text' id='fhoraire" + nb + "' name='fhoraire" + nb + "' checked><br>\
+          <label for='fsalle" + nb + "'>Salle:</label><br>\
+          <input type='text' id='fsalle" + nb + "' name='fsalle" + nb + "' checked><br><br>\
+          <label for='fDes" + nb + "'>Description:</label><br>\
+          <textarea id='fDes" + nb + "' name='fDes" + nb + "'> </textarea>\
+          <button onClick='addToAffiche(" + nb + ", " + jour + ", true)' type='button' id='btn" + nb + "'> Submit </button><br><br>\
+        </div>";
+        return element;
+      }
+
+      // add new forms
+
+      $("#btnNbEvents").click(function(){
+
+        function ifUndefinedZero(value) {
+          if (value) {
+            return parseInt(value);
+          } else {
+            return 0;
+          }
+        };
+
+        var nbEventsSamedi = ifUndefinedZero($("#fNbEventsSamedi").val());
+        var nbEventsDimanche = ifUndefinedZero($("#fNbEventsDimanche").val());
+        var nbEventsWE = ifUndefinedZero($("#fNbEventsWE").val());
+        var nbEventsSamediDes = ifUndefinedZero($("#fNbEventsSamediDes").val());
+        var nbEventsDimancheDes = ifUndefinedZero($("#fNbEventsDimancheDes").val());
+        var nbEventsWEDes = ifUndefinedZero($("#fNbEventsWEDes").val());
+
+
+        totalEvents = nbEventsSamedi + nbEventsDimanche + nbEventsWE;
+
+        // essaye de déterminer layout en fonction de nb d'events et rows
+
+        function whatsMinRowsSimple(nb) {
+          if (nb == 0) {
+            return 0;
+          } else if (nb <= 2) {
+            return 1;
+          } else if (nb <= 4){
+            return 2;
+          } else if (nb <= 6){
+            return 3;
+          } else {
+            return 4;
+          }
+        };
+
+        function unmovableRows(nbEvents, nbDes) {
+          return ((nbEvents - nbDes) % 2) + nbDes
+        }
+
+        function whatsMinRows(nbEvents, nbDes) {
+          return parseInt(nbDes) + whatsMinRowsSimple(nbEvents-parseInt(nbDes))
+        }
+
+        var unmovableRows = unmovableRows(nbEventsSamedi, nbEventsSamediDes) + unmovableRows(nbEventsDimanche, nbEventsDimancheDes) + unmovableRows(nbEventsWE, nbEventsWEDes);
+
+        var totalMinRows = whatsMinRows(nbEventsSamedi, nbEventsSamediDes) + whatsMinRows(nbEventsDimanche, nbEventsDimancheDes) + whatsMinRows(nbEventsWE, nbEventsWEDes);
+
+        console.log("total rows " + String(totalMinRows))
+        if (totalMinRows > 4 ) {
+          alert("Il y a trop d'événements ou trop d'événements avec description: on va passer au mode vertical");
+        }
+
+        // jusqu'a 4 ils peuvent etre tous 100% horizontaux et donc avoir des descriptions.un post avec descrip vaux 2
+        // essayer de déterminer layout: pas expandre quand pas d'espace, pas laisser espaces vides
+
+        function layoutifier(nbEvents, nbDes) {
+        var eventsNoDes = nbEvents - nbDes;
+        console.log("events no des " + eventsNoDes)
+        if (eventsNoDes == 1 ) {
+          $("#evenementsDeSam > .evenement").addClass("accrossHorizontal");
+          return "FIXED SPACE (1): 1 long"
+        } else if(eventsNoDes == 2) {
+          if (unmovableRows >= 3) {
+            return "too many unmovable rows, (LONG SPACE(2): 2 long or) SHORT SPACE(1): 2 short"
+          } else {
+            $("#evenementsDeSam > .noDes .evenement").addClass("accrossHorizontal"); // or maxThreeEvents evnmtMargin
+            return "enough space, LONG SPACE(2): 2 long or (SHORT SPACE(1): 2 short)"
+          }
+        } else if (eventsNoDes == 3) {
+          if (unmovableRows <= 1 ) {
+            // creo que esto nunca se va a accionar pq pa que quede solo 1 unmovable row necesariamente tiene que haber menos de cinco en total
+            $("#evenementsDeSam > .noDes .evenement").addClass("accrossHorizontal");
+            return "enough space (SHORT SPACE (2): 2 short and 1 long OR) LONGSPACE (3): 3 long"
+          } else {
+            $("#evenementsDeSam > .noDes:first-child").addClass("accrossHorizontal");
+            return "not enough space SHORT SPACE (2): 2 short and 1 long (OR LONGSPACE (3): 3 long)"
+          }
+        }
+        }
+        //  $("#evenementsDeSam > .evenement").addClass("accrossHorizontal");
+        console.log($("#evenementsDeSam > .noDes:first-child"))
+        if (totalEvents <= 4) {
+          // $(".evenement").addClass("maxThreeEvents evnmtMargin");
+          // $(".titre-d-evenement, .horaire, .salle").addClass("cardGauche");
+          // $(".description").addClass("cardDroite onlyOneRow")
+        } else if (totalEvents >= 5) { //a partir de la il faut changer les choses. s'il y a un jour avec 3 events, meilleur passer a paysage
+
+          if (nbEventsSamedi == 3 || nbEventsDimanche == 3 || nbEventsWE == 3) {
+            //faut voir description
+          }
+          $("#evenementsDeSam, #evenementsDeDim, #evenementsDeWE").addClass("manyEventsWrapper");
+          console.log(layoutifier(nbEventsSamedi, nbEventsSamediDes));
+        }
+
+        function loopThrough(nbEvents, nbEventsDes, jour, domSelector) {
+          eventsDesCounter = nbEventsDes;
+          for(var i = 0; i < (nbEvents); i++){
+            if (nbEvents - eventsDesCounter != nbEvents ){
+              var content = formCreatorDes((i), jour);
+              $(domSelector).after(content);
+              eventsDesCounter--
+            } else {
+              var content = formCreator((i), jour);
+              $(domSelector).after(content);
+            }
+          }
+        }
+
+        loopThrough(nbEventsSamedi, nbEventsSamediDes, 1, "#ftitle-samedi");
+        loopThrough(nbEventsDimanche, nbEventsDimancheDes, 2, "#ftitle-dimanche");
+        loopThrough(nbEventsWE, nbEventsWEDes, 3, "#ftitle-WE");
+
+
+      });
+
+
+    });
+  </script>
+</head>
+
+<body>
+
+<!-- AFFICHE -->
+
+  <div id="affiche-wrapper">
+    <img id="img-background" src="./agenda-WE.png">
+    <div id="jours-wrapper">
+      <div id="jour1" class="jour">
+          <h1 id="samedi">Samedi</h1>
+          <div id="evenementsDeSam">
+
+              <!-- TEST -->
+
+              <!-- <div id="evenement1" class="evenement">
+              <h2 id="titre1" class="titre-d-evenement"> Titre </h2>
+              <p class="horaire"> <img src="./clock.png" class="iconito"> <span id="horaire1"> Horaire </span></p>
+              <p class="salle"><img src="./location.png" class="iconito"> <span id="salle1"> Salle </span></p>
+              <p class="description">12h : rencontre à la Buvette (RdC), 14h : ateliers, studio photo, et plus, 16h30 : cours de danse collective, 17h : départ du défilé (depuis la place Baudoyer) direction les Amarres, où il y aura un défilé, un concert, et des surprises !</p>
+              </div>
+               -->
+            </div>
+        </div>
+
+
+      <div id="jour2" class="jour">
+          <h1 id="dimanche">Dimanche</h1>
+          <div id="evenementsDeDim">
+          </div>
+      </div>
+
+      <div id="jour3" class="jour">
+          <h1 id="toutLeWE">Tout le Week-end</h1>
+          <div id="evenementsDeWE">
+          </div>
+      </div>
+      </div>
+    </div>
+
+<!-- FORMULAIRE -->
+
+<!-- JOURS -->
+
+  <form id="events-form">
+    <p> Jours </p>
+    <div>
+      <input type="checkbox" id="if-samedi" name="if-samedi">
+      <label for="if-samedi">Samedi</label>
+    </div>
+    <label class="samediChecks" for="fNbEvents">Nombre d'événements:</label>
+    <input class="numberInput samediChecks" type="number" id="fNbEventsSamedi" name="fNbEventsSamedi"><br class="samediChecks">
+    <label class="samediChecks" for="fNbEventsDes">Combien ont besoin d'une description:</label>
+    <input class="numberInput samediChecks" type="number" id="fNbEventsSamediDes" name="fNbEventsSamediDes"><br class="samediChecks"><br>
+
+    <div>
+      <input type="checkbox" id="if-dimanche" name="if-dimanche">
+      <label for="if-dimanche">Dimanche</label>
+    </div>
+    <label class="dimChecks" for="fNbEvents">Nombre d'événements:</label>
+    <input class="numberInput dimChecks" type="number" id="fNbEventsDimanche" name="fNbEventsDimanche"><br class="dimChecks">
+    <label class="dimChecks" for="fNbEventsDes">Combien ont besoin d'une description:</label>
+    <input class="numberInput dimChecks" type="number" id="fNbEventsDimancheDes" name="fNbEventsDimancheDes"><br class="dimChecks"><br>
+
+    <div>
+      <input type="checkbox" id="if-WE" name="if-WE">
+      <label for="if-WE">Tout le week-end</label>
+    </div>
+    <label class="WEChecks" for="fNbEventsWE">Nombre d'événements:</label>
+    <input class="numberInput WEChecks" type="number" id="fNbEventsWE" name="fNbEventsWE"><br class="WEChecks">
+    <label class="WEChecks" for="fNbEventsWEDes">Combien ont besoin d'une description:</label>
+    <input class="numberInput WEChecks" type="number" id="fNbEventsWEDes" name="fNbEventsWEDes"><br class="WEChecks"><br>
+
+    <button type="button" id="btnNbEvents"> Submit </button><button type="button" id="layout"> Layout </button><br><br>
+
+
+<!-- Detail des evenements -->
+
+    <div id="#detail-events">
+      <h3 id="ftitle-samedi"> Evenements du samedi </h3>
+      <!-- pour tests
+      <label for="fnom1">Nom de l'event:</label><br>
+      <input type="text" id="fnom1" name="fnom1"><br>
+      <label for="fhoraire1">Horaire:</label><br>
+      <input type="text" id="fhoraire1" name="fhoraire1"><br>
+      <label for="fsalle1">Salle:</label><br>
+      <input type="text" id="fsalle1" name="fsalle1"><br><br>
+      <button type="button" id="btn0"> Submit </button> -->
+      <h3 id="ftitle-dimanche"> Evenements du dimanche </h3>
+      <h3 id="ftitle-WE"> Evenements du WE </h3>
+    </div>
+  </form>
+<script>
+
+// add to affiche from new/added forms
+  function addToAffiche(nb, jour, des) {
+    var temporaryId = String(nb);
+
+    if (jour == 1) {
+      var post = "#evenementsDeSam";
+    } else if (jour == 2 ) {
+      var post = "#evenementsDeDim";
+    } else {
+      var post = "#evenementsDeWE";
+    }
+     var titre = $("#fnom"+ temporaryId).val();
+     var horaire = $("#fhoraire" + temporaryId).val();
+     var salle = $("#fsalle" + temporaryId).val();
+
+     console.log("des is " + typeof(des))
+
+     if (!des) {
+       var toInsert = "<div id='evenement" + temporaryId + "' class='noDes evenement'>\
+            <h2 id='titre" + temporaryId + "' class='titre-d-evenement'> " + titre + " </h2>\
+            <p class='horaire'><img src='./clock.png' class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+            <p class='salle'><img src='./location.png' class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
+          </div>";
+     } else {
+       var description = $("#fDes" + temporaryId).val();
+       var toInsert = "<div id='evenement" + temporaryId + "' class='des evenement maxThreeEvents evnmtMargin accrossHorizontal'>\
+            <h2 id='titre" + temporaryId + "' class='titre-d-evenement cardGauche'> " + titre + " </h2>\
+            <p class='horaire cardGauche'><img src='./clock.png' class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+            <p class='salle cardGauche'><img src='./location.png' class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
+            <p class='description cardDroite onlyOneRow'>" + description + "</p>\
+          </div>";
+     }
+
+      $(post).append(toInsert);
+
+  };
+
+</script>
+</body>
+</html>
