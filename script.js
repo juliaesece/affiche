@@ -59,7 +59,7 @@ $(document).ready(function(){
         <input class='form-control' placeholder='Salle' type='text' id='fsalle" + nb + "' name='fsalle" + nb + "'>\
         <label for='fsalle" + nb + "'>Salle</label>\
       </div>\
-      <button class='btn btn-light' onClick='addToAffiche(" + nb + ", " + jour + ", false)' type='button' id='btn" + nb + "'>Submit</button><br><br>\
+      <button class='btn btn-light' onClick='addToAffiche(" + nb + ", " + jour + ", false)' type='button' id='btn" + nb + "'>Soumettre</button><br><br>\
     </div>";
     return element;
   }
@@ -83,7 +83,7 @@ $(document).ready(function(){
         <textarea class='form-control' placeholder='Description' id='fDes" + nb + "' name='fDes" + nb + "'></textarea>\
         <label for='fDes" + nb + "'>Description</label>\
       </div>\
-      <button class='btn btn-light' onClick='addToAffiche(" + nb + ", " + jour + ", true)' type='button' id='btn" + nb + "'> Submit </button><br><br>\
+      <button class='btn btn-light' onClick='addToAffiche(" + nb + ", " + jour + ", true)' type='button' id='btn" + nb + "'>Soumettre</button><br><br>\
     </div>";
     return element;
   }
@@ -154,6 +154,9 @@ $(document).ready(function(){
     loopThrough(nbEventsSamedi, nbEventsSamediDes, 1, "#ftitle-samedi");
     loopThrough(nbEventsDimanche, nbEventsDimancheDes, 2, "#ftitle-dimanche");
     loopThrough(nbEventsWE, nbEventsWEDes, 3, "#ftitle-WE");
+
+    $("#events-form").toggle();
+    toggleJourText();
 
     console.log("total events" + totalEvents);
 

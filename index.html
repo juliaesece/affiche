@@ -15,7 +15,7 @@
 <!-- AFFICHE -->
 
   <div id="affiche-wrapper">
-    <img id="img-background"  src="./agenda-WE.png">
+    <img id="img-background"  src="https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/agenda-WE.png">
     <div id="jours-wrapper">
       <div id="jour1" class="jour">
           <h1 id="samedi">Samedi</h1>
@@ -25,8 +25,8 @@
 
               <!-- <div id="evenement1" class="evenement">
               <h2 id="titre1" class="titre-d-evenement"> Titre </h2>
-              <p class="horaire"> <img  src="./clock.png" class="iconito"> <span id="horaire1"> Horaire </span></p>
-              <p class="salle"><img  src="./location.png" class="iconito"> <span id="salle1"> Salle </span></p>
+              <p class="horaire"> <img  src="https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/clock.png" class="iconito"> <span id="horaire1"> Horaire </span></p>
+              <p class="salle"><img  src="https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/location.png" class="iconito"> <span id="salle1"> Salle </span></p>
               <p class="description">12h : rencontre à la Buvette (RdC), 14h : ateliers, studio photo, et plus, 16h30 : cours de danse collective, 17h : départ du défilé (depuis la place Baudoyer) direction les Amarres, où il y aura un défilé, un concert, et des surprises !</p>
               </div>
                -->
@@ -54,8 +54,9 @@
 
 <div id="forms-wrapper">
 
+<h3 class="form accrossHorizontal"> Jours — <span id="cacherJours">click pour cacher</span></h3>
+
   <form id="events-form">
-    <h1 class="form accrossHorizontal"> Jours </h1>
     <div class="form-check accrossHorizontal">
       <input class="form-check-input" type="checkbox" id="if-samedi" name="if-samedi">
       <label class="form-check-label" for="if-samedi">Samedi</label>
@@ -95,7 +96,7 @@
       <label class="WEChecks" for="fNbEventsWEDes">Combien ont besoin d'une description</label>
     </div>
 
-    <button class="btn btn-light" type="button" id="btnNbEvents"> Submit </button>
+    <button class="btn btn-light" type="button" id="btnNbEvents"> Soumettre </button>
     <button class="btn btn-light" type="button" id="layout"> Layout </button><br><br>
 
   </form>
@@ -118,9 +119,9 @@
     </div>
 </form>
 
-<button id="downloadAffiche" class="btn btn-light">Download</button>
+<button id="downloadAffiche" class="btn btn-light">Préparer pour impression</button>
 
-<button id="downloadAffiche2" class="btn btn-light">Download</button>
+<button id="downloadAffiche2" class="btn btn-light">Télécharger en PNG</button>
 
 </div>
 
@@ -143,87 +144,119 @@
 
      console.log("des is " + typeof(des))
 
-     if (!des) {
-       var toInsert = "<div id='evenement" + temporaryId + "' class='noDes evenement'>\
-            <h2 id='titre" + temporaryId + "' class='titre-d-evenement'> " + titre + " </h2>\
-            <p class='horaire'><img src='./clock.png'  class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
-            <p class='salle'><img src='./location.png'  class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
-          </div>";
+     if ($("#evenement" + temporaryId).length) {
+       console.log("evenement exists, modifying")
+       $("#titre" + temporaryId).text(titre)
+       $("#horaire" + temporaryId).text(horaire)
+       $("#salle" + temporaryId).text(salle)
+       if (des) {
+         var description = $("#fDes" + temporaryId).val();
+         $("#description" + temporaryId).text(description)
+       }
      } else {
-       var description = $("#fDes" + temporaryId).val();
-       var toInsert = "<div id='evenement" + temporaryId + "' class='des evenement maxThreeEvents evnmtMargin accrossHorizontal'>\
-            <h2 id='titre" + temporaryId + "' class='titre-d-evenement cardGauche'> " + titre + " </h2>\
-            <p class='horaire cardGauche'><img src='./clock.png'  class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
-            <p class='salle cardGauche'><img src='./location.png' class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
-            <p class='description cardDroite onlyOneRow'>" + description + "</p>\
-          </div>";
+       console.log("evenement doesn't exist, creating")
+       if (!des) {
+         var toInsert = "<div id='evenement" + temporaryId + "' class='noDes evenement'>\
+              <h2 id='titre" + temporaryId + "' class='titre-d-evenement'> " + titre + " </h2>\
+              <p class='horaire'><img src='https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/clock.png'  class='iconito'><span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+              <p class='salle'><img src='https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/location.png'  class='iconito'><span id='salle" + temporaryId + "'> " + salle + " </span></p>\
+            </div>";
+       } else {
+         var description = $("#fDes" + temporaryId).val();
+         var toInsert = "<div id='evenement" + temporaryId + "' class='des evenement maxThreeEvents evnmtMargin accrossHorizontal'>\
+              <h2 id='titre" + temporaryId + "' class='titre-d-evenement cardGauche'> " + titre + " </h2>\
+              <p class='horaire cardGauche'><img src='https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/clock.png'  class='iconito'><span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+              <p class='salle cardGauche'><img src='https://raw.githubusercontent.com/juliaesece/affiche/d1946d5b78e07109c270fbffa170a1a5decd2406/location.png' class='iconito'><span id='salle" + temporaryId + "'> " + salle + " </span></p>\
+              <p class='description cardDroite onlyOneRow' id='description" + temporaryId + "'>" + description + "</p>\
+            </div>";
+       }
+
+       $("#btn" + temporaryId).text("Modifier")
+
      }
+
 
       $(post).append(toInsert);
 
   };
 
-  // $("#").click(function(){
-  //   const affiche = $("#").html();
-  //   html2pdf().set({filename: 'affiche.pdf'}).from(affiche).save();
-  // });
+  $("#downloadAffiche").click(function(){
+    $("body").addClass("crema-background");
+    $("#forms-wrapper").hide();
+  });
+
+  var toggleJourText = function(){
+    var texte = $("#cacherJours").text();
+    if (texte == 'click pour cacher' ) {
+      $("#cacherJours").text('click pour montrer');
+    } else {
+      $("#cacherJours").text('click pour cacher');
+    }
+  }
+
+  $("#cacherJours").click(function(){
+    $("#events-form").toggle();
+    toggleJourText();
+  });
+
 
   window.onload = function () {
 
-    document.getElementById("downloadAffiche")
+    document.getElementById("downloadAffiche2")
         .addEventListener("click", () => {
             // const affiche = this.document.getElementById("affiche-wrapper");
             var affiche = "";
 
             var download = function(){
-              // var link = document.createElement('a');
-              // link.download = 'filename.png';
-              // link.href = document.getElementById('dCanvas').toDataURL()
-              // link.click();
               var canvas = document.getElementById('dCanvas');
-              console.log(canvas);
               var anchor = document.createElement("a");
               anchor.href = canvas.toDataURL("image/png");
-              nchor.download = "IMAGE.PNG";
+              anchor.download = "affiche.png";
               anchor.click();
             }
 
-            html2canvas(document.querySelector("#affiche-wrapper")).then(canvas => {
+            $("img").crossOrigin = "anonymous";
+
+            html2canvas(document.querySelector("#affiche-wrapper"), {
+              useCORS:true,
+              onrendered: function(canvas) {
+                var result = canvas.toDataURL();
+              }
+            }).then(canvas => {
                 canvas.setAttribute("id", "dCanvas")
                 document.body.appendChild(canvas)
                 affiche = canvas;
+                console.log("affiche is")
+                console.log(affiche)
+                download();
             });
-
-            console.log(affiche);
-
-
 
           });
 
-          document.getElementById("downloadAffiche2")
-              .addEventListener("click", () => {
-                  // const affiche = this.document.getElementById("affiche-wrapper");
-
-                  var download = function(){
-                    // var link = document.createElement('a');
-                    // link.download = 'filename.png';
-                    // link.href = document.getElementById('dCanvas').toDataURL()
-                    // link.click();
-                    var canvas = document.getElementById('dCanvas');
-                    console.log(canvas);
-                    var anchor = document.createElement("a");
-                    anchor.href = canvas.toDataURL("image/png");
-                    nchor.download = "IMAGE.PNG";
-                    anchor.click();
-                  }
-
-                  download();
-
-                  console.log(affiche);
-
-
-
-                });
+          // document.getElementById("downloadAffiche2")
+          //     .addEventListener("click", () => {
+          //         // const affiche = this.document.getElementById("affiche-wrapper");
+          //
+          //         var download = function(){
+          //           // var link = document.createElement('a');
+          //           // link.download = 'filename.png';
+          //           // link.href = document.getElementById('dCanvas').toDataURL()
+          //           // link.click();
+          //           var canvas = document.getElementById('dCanvas');
+          //           console.log(canvas);
+          //           var anchor = document.createElement("a");
+          //           anchor.href = canvas.toDataURL("image/png");
+          //           nchor.download = "IMAGE.PNG";
+          //           anchor.click();
+          //         }
+          //
+          //         download();
+          //
+          //         console.log(affiche);
+          //
+          //
+          //
+          //       });
 
 }
 
