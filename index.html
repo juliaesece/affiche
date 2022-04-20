@@ -7,6 +7,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
@@ -14,7 +15,7 @@
 <!-- AFFICHE -->
 
   <div id="affiche-wrapper">
-    <img id="img-background" src="./agenda-WE.png">
+    <img id="img-background"  src="./agenda-WE.png">
     <div id="jours-wrapper">
       <div id="jour1" class="jour">
           <h1 id="samedi">Samedi</h1>
@@ -24,8 +25,8 @@
 
               <!-- <div id="evenement1" class="evenement">
               <h2 id="titre1" class="titre-d-evenement"> Titre </h2>
-              <p class="horaire"> <img src="./clock.png" class="iconito"> <span id="horaire1"> Horaire </span></p>
-              <p class="salle"><img src="./location.png" class="iconito"> <span id="salle1"> Salle </span></p>
+              <p class="horaire"> <img  src="./clock.png" class="iconito"> <span id="horaire1"> Horaire </span></p>
+              <p class="salle"><img  src="./location.png" class="iconito"> <span id="salle1"> Salle </span></p>
               <p class="description">12h : rencontre à la Buvette (RdC), 14h : ateliers, studio photo, et plus, 16h30 : cours de danse collective, 17h : départ du défilé (depuis la place Baudoyer) direction les Amarres, où il y aura un défilé, un concert, et des surprises !</p>
               </div>
                -->
@@ -117,6 +118,10 @@
     </div>
 </form>
 
+<button id="downloadAffiche" class="btn btn-light">Download</button>
+
+<button id="downloadAffiche2" class="btn btn-light">Download</button>
+
 </div>
 
 <script>
@@ -141,14 +146,14 @@
      if (!des) {
        var toInsert = "<div id='evenement" + temporaryId + "' class='noDes evenement'>\
             <h2 id='titre" + temporaryId + "' class='titre-d-evenement'> " + titre + " </h2>\
-            <p class='horaire'><img src='./clock.png' class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
-            <p class='salle'><img src='./location.png' class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
+            <p class='horaire'><img src='./clock.png'  class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+            <p class='salle'><img src='./location.png'  class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
           </div>";
      } else {
        var description = $("#fDes" + temporaryId).val();
        var toInsert = "<div id='evenement" + temporaryId + "' class='des evenement maxThreeEvents evnmtMargin accrossHorizontal'>\
             <h2 id='titre" + temporaryId + "' class='titre-d-evenement cardGauche'> " + titre + " </h2>\
-            <p class='horaire cardGauche'><img src='./clock.png' class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
+            <p class='horaire cardGauche'><img src='./clock.png'  class='iconito'> <span id='horaire" + temporaryId + "'> " + horaire + " </span></p>\
             <p class='salle cardGauche'><img src='./location.png' class='iconito'> <span id='salle" + temporaryId + "'> " + salle + " </span></p>\
             <p class='description cardDroite onlyOneRow'>" + description + "</p>\
           </div>";
@@ -157,6 +162,70 @@
       $(post).append(toInsert);
 
   };
+
+  // $("#").click(function(){
+  //   const affiche = $("#").html();
+  //   html2pdf().set({filename: 'affiche.pdf'}).from(affiche).save();
+  // });
+
+  window.onload = function () {
+
+    document.getElementById("downloadAffiche")
+        .addEventListener("click", () => {
+            // const affiche = this.document.getElementById("affiche-wrapper");
+            var affiche = "";
+
+            var download = function(){
+              // var link = document.createElement('a');
+              // link.download = 'filename.png';
+              // link.href = document.getElementById('dCanvas').toDataURL()
+              // link.click();
+              var canvas = document.getElementById('dCanvas');
+              console.log(canvas);
+              var anchor = document.createElement("a");
+              anchor.href = canvas.toDataURL("image/png");
+              nchor.download = "IMAGE.PNG";
+              anchor.click();
+            }
+
+            html2canvas(document.querySelector("#affiche-wrapper")).then(canvas => {
+                canvas.setAttribute("id", "dCanvas")
+                document.body.appendChild(canvas)
+                affiche = canvas;
+            });
+
+            console.log(affiche);
+
+
+
+          });
+
+          document.getElementById("downloadAffiche2")
+              .addEventListener("click", () => {
+                  // const affiche = this.document.getElementById("affiche-wrapper");
+
+                  var download = function(){
+                    // var link = document.createElement('a');
+                    // link.download = 'filename.png';
+                    // link.href = document.getElementById('dCanvas').toDataURL()
+                    // link.click();
+                    var canvas = document.getElementById('dCanvas');
+                    console.log(canvas);
+                    var anchor = document.createElement("a");
+                    anchor.href = canvas.toDataURL("image/png");
+                    nchor.download = "IMAGE.PNG";
+                    anchor.click();
+                  }
+
+                  download();
+
+                  console.log(affiche);
+
+
+
+                });
+
+}
 
 </script>
 </body>
