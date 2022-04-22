@@ -31,13 +31,28 @@ body {
   z-index: -1;
 }
 
-#affiche-wrapper {
+.affiche-wrapper-default {
   position: absolute;
   height: 297mm;
   width: 210mm;
   /* border: 0.5px solid hsla(0, 0%, 10%, 0.2); */
   display: grid;
   grid-template-columns: 20mm 1fr 20mm;
+  grid-template-rows: 70mm 1fr 60mm;
+  grid-template-areas:
+    ". . ."
+    ". content ."
+    ". . .";
+
+}
+
+.affiche-wrapper-many-events {
+  position: absolute;
+  height: 297mm;
+  width: 210mm;
+  /* border: 0.5px solid hsla(0, 0%, 10%, 0.2); */
+  display: grid;
+  grid-template-columns: 1fr 680px 1fr;
   grid-template-rows: 70mm 1fr 60mm;
   grid-template-areas:
     ". . ."
@@ -82,7 +97,7 @@ body {
 
 .joursModeVertical>* {
       /* flex: 1 1 80px; */
-      width: 300px;
+      width: 330px;
       flex-basis: content;
   }
 
@@ -155,11 +170,15 @@ body {
   padding: 5px;
   padding-left: 15px;
   margin-bottom: 5px;
+  border: 1px solid black;
+}
 
-  /* export into class */
+.bleuBorders {
+  border-color: #3f6db2;
+}
 
-
-
+.jauneBorders {
+  border-color: #ffd744;
 }
 
 .evnmtMargin {
@@ -213,7 +232,9 @@ p {
 }
 
 .description {
+  padding-top: 5px;
   align-content: center;
+  white-space: pre-wrap;
 }
 
 @font-face {
