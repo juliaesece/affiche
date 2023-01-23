@@ -13,16 +13,38 @@ $(document).ready(function(){
   var totalMinRows = 0;
   var modoVertical = false;
   var rajouterBibliotheque = false;
+  var textToCopy = "";
 
   // console.log("modo vertical")
   // console.log(modoVertical)
 
   // get date pour affiche
   var curr = new Date; // get current date
-  const month = curr.toLocaleString('fr-FR', { month: 'long' });
-  var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-  var sabado = first + 6; // last day is the first day + 6
-  var domingo = first + 7; // last day is the first day + 6
+  // console.log("curr ", curr)
+
+  var dayOfWeek = curr.getDay()
+  // console.log("day of week :", dayOfWeek)
+  var first = new Date(curr);
+  // console.log("first one, deberia ser hoy ", first)
+  first.setDate(first.getDate() - dayOfWeek);  // First day is the day of the month - the day of the week
+  // console.log("first, deberia ser domingo o lunes creo ", first)
+  var sabado = new Date(first);
+  sabado.setDate(sabado.getDate() + 6); // getting saturday
+  // console.log("sabado, deberia ser sabado ", sabado)
+  const nbMonthSab = ("0" + (sabado.getMonth() + 1)).slice(-2)
+  // console.log("nb month", nbMonthSab)
+  const monthSab = sabado.toLocaleString('fr-FR', { month: 'long' });
+  // console.log("month", monthSab)
+  sabado = sabado.getDate();
+  // console.log("sabado, deberria ser el nro", sabado)
+
+  var domingo = new Date(first);
+  domingo.setDate(domingo.getDate() + 7); // getting sunday
+  // console.log("domingo, deberia ser sabado ", domingo)
+  const nbMonthDom = ("0" + (domingo.getMonth() + 1)).slice(-2)
+  // console.log("nb month", nbMonth)
+  const monthDom = domingo.toLocaleString('fr-FR', { month: 'long' });
+  domingo = domingo.getDate();
 
   // function padTo2Digits(num) {
   //   return num.toString().padStart(2, '0');
@@ -40,7 +62,7 @@ $(document).ready(function(){
   $("#if-samedi").change(function() {
     if(this.checked) {
       $("#jour1").show();
-      $("#samediDate").text(String(sabado) + " " + month)
+      $("#samediDate").text(String(sabado) + " " + monthSab)
       $(".samediChecks").show();
     } else {
       $("#jour1").hide();
@@ -51,7 +73,7 @@ $(document).ready(function(){
     if(this.checked) {
       $("#jour2").show();
       $(".dimChecks").show();
-      $("#dimancheDate").text(String(domingo) + " " + month)
+      $("#dimancheDate").text(String(domingo) + " " + monthDom)
     } else {
       $("#jour2").hide();
       $(".dimChecks").hide();
@@ -66,6 +88,10 @@ $(document).ready(function(){
       $(".WEChecks").hide();
     }
   });
+
+  var fileTitle = "Affiche du WE - " + String(sabado) + " " + monthSab + " et " + String(domingo) + " " + monthDom
+
+  $('head title').text(fileTitle);
 
   $("#if-bibliotheque").change(function() {
     if(this.checked) {
@@ -183,10 +209,10 @@ $(document).ready(function(){
     </div>\
     ";
     if (nb == 0 && modoVertical == true) {
-      console.log("appending bc modo vertical true and first element")
+      // console.log("appending bc modo vertical true and first element")
       $(post).append(toInsert);
     } else {
-      console.log("after bc modo vertical false o dps 1")
+      // console.log("after bc modo vertical false o dps 1")
       $(jourPost).after(toInsert);
     }
   }
@@ -194,6 +220,9 @@ $(document).ready(function(){
   // ONCLICK: add new forms
 
   $("#btnNbEvents").click(function(){
+    var titreDeAffiche = $("#titreForm").val()
+    $("#titreAffiche").text(titreDeAffiche)
+
     nbEventsSamedi = ifUndefinedZero($("#fNbEventsSamedi").val());
     if (rajouterBibliotheque == true) {
       nbEventsSamedi++
@@ -214,13 +243,12 @@ $(document).ready(function(){
     //loopThrough creates forms
     function loopThrough(nbEvents, nbEventsDes, jour, domSelector) {
       var eventsNoDesCounter = nbEvents - nbEventsDes;
-      console.log(eventsNoDesCounter);
+      // console.log(eventsNoDesCounter);
       var eventsDesCounter = nbEventsDes;
-      console.log(eventsDesCounter);
       var isBibliothequeRajoutee = false;
       for(i = parseInt(nbEvents-1); i >= 0 ; i--){
         var formDiv = $("#form" + String(jour) + String(i));
-        console.log("cycle ", i, "; rajouterBibliotheque es ", rajouterBibliotheque, "; jour es ", jour)
+        // console.log("cycle ", i, "; rajouterBibliotheque es ", rajouterBibliotheque, "; jour es ", jour)
         if (rajouterBibliotheque == true && jour == 1 && isBibliothequeRajoutee == false) {
           bibliothequeCreator(i)
           isBibliothequeRajoutee = true
@@ -276,7 +304,7 @@ $(document).ready(function(){
 
   function layoutifier(nbEvents, nbDes, selector){
 
-    console.log("total rows " + String(totalMinRows))
+  //  console.log("total rows " + String(totalMinRows))
     var jourNb = 0;
 
     switch (selector) {
@@ -290,7 +318,7 @@ $(document).ready(function(){
         jourNb = 3;
         break;
       default:
-        console.log("pb in siwcth")
+        console.log("pb in switch")
     }
 
     //voir combien d'events sans description il y a
@@ -365,9 +393,12 @@ $(document).ready(function(){
 
 
 function findPosition(content, jour, id, post) {
-  console.log("id is", id)
+  // console.log("id is", id)
   if (id == 0 ) {
     console.log("if id is 0 is true")
+    $(post).after(content)
+  } else if (id == 1 ) {
+    console.log("if id is 1 is true")
     $(post).after(content)
   } else if ($("#evenement" + concatJourId(jour, (id-1))).length){
     $("#evenement" + concatJourId(jour, (id-1))).after(content)
@@ -387,24 +418,28 @@ function findPosition(content, jour, id, post) {
     var temporaryId = String(jour) + String(id);
     var nb = parseInt(id);
     var jourPost = "#jour" + String(jour);
+    var jourPourTexte = "";
+    var textToAppend;
 
     if (jour == 1) {
       var post = "#evenementsDeSam";
       var dayClass = "samediClass";
+      jourPourTexte = "Samedi " + String(sabado) + "/" + nbMonthSab;
     } else if (jour == 2 ) {
       var post = "#evenementsDeDim";
       var dayClass = "dimancheClass";
-
+      jourPourTexte = "Dimanche " + String(domingo) + "/" + nbMonthDom;
     } else {
       var post = "#evenementsDeWE";
       var dayClass = "WEClass";
+      jourPourTexte = "Tout le week-end"
     }
      var titre = $("#fnom"+ temporaryId).val();
      var horaire = $("#fhoraire" + temporaryId).val();
      var salle = $("#fsalle" + temporaryId).val();
 
      if ($("#evenement" + temporaryId).length) {
-       console.log("evenement exists, modifying")
+       // console.log("evenement exists, modifying")
        $("#titre" + temporaryId).text(titre)
        $("#horaire" + temporaryId).text(" " + horaire)
        $("#salle" + temporaryId).text(" " + salle)
@@ -414,7 +449,7 @@ function findPosition(content, jour, id, post) {
          $("#description" + temporaryId).html(description)
        }
      } else {
-       console.log("evenement doesn't exist, creating")
+      // console.log("evenement doesn't exist, creating")
        if (!des) {
          var toInsert = "<div id='evenement" + temporaryId + "' class='noDes evenement " + dayClass + "'>\
               <h2 id='titre" + temporaryId + "' class='titre-d-evenement'> " + titre + " </h2>\
@@ -441,8 +476,26 @@ function findPosition(content, jour, id, post) {
          // console.log("after bc modo vertical false o dps 1")
          findPosition(toInsert, jour, id, jourPost);
        }
-
      }
+
+
+    if (description) {
+      textToAppend = titre + " <br> " + description + " <br>📅 "+ jourPourTexte + ", " + horaire + ", " + salle + " <br>🔎 <br><br>" ;
+    } else {
+      textToAppend = titre + " <br> " + " <br>📅 "+ jourPourTexte + ", " + horaire + ", " + salle + " <br>🔎 <br><br>";
+    }
+
+    console.log($("#textEvent" + temporaryId).length)
+
+    if ($("#textEvent" + temporaryId).length) {
+      // console.log("text exists")
+      $("#textEvent" + temporaryId).html(textToAppend)
+    } else {
+      // console.log(textToCopy);
+      // console.log("text doesn't exist")
+      textToCopy = textToCopy + textToAppend;
+      $("#textForFb").append("<div id='textEvent"+ temporaryId +"'>" + textToAppend + "</div>");
+    }
   };
 
   function eliminer(jour, nb){
@@ -452,7 +505,7 @@ function findPosition(content, jour, id, post) {
   }
 
  $(document).on('click','.submitEventForm', function(){
-    console.log("event form clicked");
+    // console.log("event form clicked");
     // console.log(this);
     // console.log(this.id);
     let jour = this.id.slice(4, 5)
@@ -478,7 +531,7 @@ $(document).on('click','.eraseEventForm', function(){
   // console.log(des)
   // console.log("des is ")
   // console.log(des)
-  console.log(jour, nb);
+  // console.log(jour, nb);
   eliminer(jour, nb);
 });
 
@@ -520,6 +573,129 @@ $(document).on('click','.eraseEventForm', function(){
       // };
     // };
 
+    var selected=0;
+    $(document).on('click', '.evenement', function(){
+       selected= $(this).index();
+       // alert("Selected item is " + $(this).find('h2').text());
+       // console.log(this)
+       // console.log("selected ", selected)
+       $("#selectionne").text($(this).find('h2').text())
+   });
+   $(document).on('click', '.jour', function(){
+      selected= $(this).index();
+      // alert("Selected item is " + $(this).find('h2').text());
+      // console.log(this)
+      // console.log("selected ", selected)
+      $("#selectionne").text($(this).find('h2').text())
+  });
+
+
+console.log("vacio selected ", selected)
+   var itemlist = $('#jours-wrapper');
+   var len=$(itemlist).children().length;
+
+   $("#up").click(function(e){
+     // console.log("up selected ", selected)
+       e.preventDefault();
+       if(selected>0)
+        {
+            jQuery($(itemlist).children().eq(selected-1)).before(jQuery($(itemlist).children().eq(selected)));
+            selected=selected-1;
+        }
+    });
+
+     $("#down").click(function(e){
+        e.preventDefault();
+        if(selected < len)
+        {
+            jQuery($(itemlist).children().eq(selected+1)).after(jQuery($(itemlist).children().eq(selected)));
+            selected=selected+1;
+        }
+    });
+
+    $(document).on('click','#copyInfo', function  () {
+      textToCopy = textToCopy.replace(/<br>/g, '\n');
+      // console.log(textToCopy);
+      navigator.clipboard.writeText(textToCopy);
+    });
+
+    $(document).on('click','#compacter', function  () {
+      $("style").remove();
+      const style = document.createElement('style');
+      style.textContent = `
+      h1 {
+      margin-bottom : 0px;
+      line-height: 34px;
+      }
+
+      h3 {
+      font-family : Bygone;
+      color: #3f6db2;
+      }
+
+      .titre-d-evenement {
+      font-size: 1.9rem;
+      line-height: 25px;
+      }
+
+      .joursModeVertical {
+      row-gap: 5px;
+      }
+      `;
+
+      document.head.appendChild(style);
+
+    });
+
+    $(document).on('click','#compacterDouble', function  () {
+      $("style").remove();
+      const style = document.createElement('style');
+      style.textContent = `
+      h1 {
+      margin-bottom : 0px;
+      line-height: 34px;
+      }
+
+      h3 {
+      font-family : Bygone;
+      color: #3f6db2;
+      }
+
+      .titre-d-evenement {
+      font-size: 1.45rem;
+      line-height: 25px;
+      }
+
+      p {
+      font-size: 15px;
+      margin-bottom: 3px;
+      margin-top: 3px;
+      }
+
+      .joursModeVertical {
+      row-gap: 5px;
+      }
+
+      .affiche-wrapper-many-events {
+      grid-template-rows: 65mm 1fr 60mm;
+      grid-template-columns: 1fr 720px 1fr;
+      }
+
+      .joursModeVertical > * {
+      width: 350px;
+      }
+      `;
+
+      document.head.appendChild(style);
+
+    });
+
+    $(document).on('click','#descompacter', function  () {
+
+      $("style").remove();
+
+    });
+
   $(document).on('click','#downloadAffiche2', function () {
       // const affiche = this.document.getElementById("affiche-wrapper");
       console.log("telecharging starting")
@@ -531,7 +707,8 @@ $(document).on('click','.eraseEventForm', function(){
         var anchor = document.createElement("a");
         anchor.href = canvas.toDataURL("image/png");
         // anchor.href = ctx.toBlobURL('application/pdf');
-        anchor.download = "affiche-WE.pdf";
+        var fileTitle = "Affiche-du-WE-" + String(sabado) + "-" + monthSab + "-et-" + String(domingo) + "-" + monthDom;
+        anchor.download = fileTitle + ".png";
         anchor.click();
       }
 
@@ -549,7 +726,12 @@ $(document).on('click','.eraseEventForm', function(){
           console.log("affiche is")
           console.log(affiche)
           download();
-      });
+      }).then( canvas => {
+        $("canvas").remove();
+      }
+      );
+
+
     });
 
 

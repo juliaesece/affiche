@@ -2,6 +2,10 @@ body {
   padding: 5px;
 }
 
+@media print {
+#forms-wrapper { display:none !important; }
+}
+
 /* :root {
    --bs-body-font-size: 0.9rem;
 } */
@@ -72,7 +76,7 @@ body {
 
 #jours-wrapper {
   grid-area: content;
-  height: 775px;
+  height: 725px;
 }
 
 /* quand il y a trop d'events*/
